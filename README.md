@@ -53,8 +53,53 @@
    * Hàng thứ 2 dịch vòng trái 1 lần.  
    * Hàng thứ 3 dịch vòng trái 2 lần.  
    * Hàng thứ 4 dịch vòng trái 3 lần.   
-```  
+```
+  def __shift_rows(self, s):
+    s[0][1], s[1][1], s[2][1], s[3][1] = s[1][1], s[2][1], s[3][1], s[0][1]
+    s[0][2], s[1][2], s[2][2], s[3][2] = s[2][2], s[3][2], s[0][2], s[1][2]
+    s[0][3], s[1][3], s[2][3], s[3][3] = s[3][3], s[0][3], s[1][3], s[2][3]
 
 
-   
+  def __inv_shift_rows(self, s):
+    s[0][1], s[1][1], s[2][1], s[3][1] = s[3][1], s[0][1], s[1][1], s[2][1]
+    s[0][2], s[1][2], s[2][2], s[3][2] = s[2][2], s[3][2], s[0][2], s[1][2]
+    s[0][3], s[1][3], s[2][3], s[3][3] = s[1][3], s[2][3], s[3][3], s[0][3]
+
+```
+
+### 4. Hàm MixColumns  
+ * Biến đổi MixColumns() tính toán trên từng cột của state. Các cột được coi như là đa thức trong trường GF(28) và nhân với một đa thức a(x) với:  
+ * > a(x) = (03)x^3 +(01)x^2 +(01)x + (02)  
+ * Biến đổi này có thể được trình bày như phép nhân một ma trận, mà mỗi byte được hiểu như là một phần tử trong trường GF(28)  
+ ```  
+  def __mix_single_column(self, a):
+  # please see Sec 4.1.2 in The Design of Rijndael
+    t = a[0] ^ a[1] ^ a[2] ^ a[3]
+    u = a[0]
+    a[0] ^= t ^ xtime(a[0] ^ a[1])
+    a[1] ^= t ^ xtime(a[1] ^ a[2])
+    a[2] ^= t ^ xtime(a[2] ^ a[3])
+    a[3] ^= t ^ xtime(a[3] ^ u)
+
+
+  def __mix_columns(self, s):
+    for i in range(4):
+      self.__mix_single_column(s[i])
+
+
+  def __inv_mix_columns(self, s):
+  # see Sec 4.1.3 in The Design of Rijndael
+    for i in range(4):
+      u = xtime(xtime(s[i][0] ^ s[i][2]))
+      v = xtime(xtime(s[i][1] ^ s[i][3]))
+      s[i][0] ^= u
+      s[i][1] ^= v
+      s[i][2] ^= u
+      s[i][3] ^= v
+
+      self.__mix_columns(s)
+ ```  
+ 
+ 
+
    
