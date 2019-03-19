@@ -12,5 +12,21 @@
    * SubBytes  
    * Rcon: tính giá trị Rcon(i) Trong đó :  
    * > Rcon(i) = x(i-1) mod (x8 + x4 + x3 + x + 1).  
+   * ShiftRow   
+
+# Quá trình mã hóa AES  
+### 1. Hàm AddRoundKey  
+ * Được áp dụng từ vòng lặp thứ 1 tới vòng lặp Nr  
+ * Trong biến đổi Addroundkey(), một khóa vòng được cộng với state bằng một phép XOR theo từng bit đơn giản.  
+ * Mỗi khóa vòng gồm có 4 từ (128 bit) được lấy từ lịch trình khóa. 4 từ đó được cộng vào mỗi cột của state, sao cho:  
+ * > [S’0,c, S’1,c, S’2,c, S’3,c ] = [S0,c, S1,c, S2,c, S3,c ]  [W(4*i + c)] với 0 <= c < 4.  ```  
+ ```  
+  def __add_round_key(self, s, k):
+    for i in range(4):
+      for j in range(4):
+        s[i][j] ^= k[i][j]  
+ ```  
+ 
+  
    
    
